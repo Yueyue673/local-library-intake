@@ -1,0 +1,32 @@
+[
+  {
+    "source": "garden.epub",
+    "archive": "originals/0001-garden.epub",
+    "source_sha256": "e32a82011bdee98c2c5975171ac7429cce8061b0ff16943afb8ea95d85ccef15",
+    "archived_sha256": "e32a82011bdee98c2c5975171ac7429cce8061b0ff16943afb8ea95d85ccef15",
+    "bytes": 1353,
+    "status": "converted",
+    "text": "text/0001-garden.epub.txt",
+    "text_sha256": "0178782de38943b2cf350fcfe0fb8f7a910d9d4627c40ea2291c70b7c301c706"
+  },
+  {
+    "source": "recipe.md",
+    "archive": "originals/0002-recipe.md",
+    "source_sha256": "91eefa0335eb70fb012e2b90112dec06b627724a8fdfa530f8ba3ebc1255c221",
+    "archived_sha256": "91eefa0335eb70fb012e2b90112dec06b627724a8fdfa530f8ba3ebc1255c221",
+    "bytes": 82,
+    "status": "converted",
+    "text": "text/0002-recipe.md.txt",
+    "text_sha256": "84185014b80a9364e22191114e3b47bbbd6081f0561cbf05594624d039e230a0"
+  },
+  {
+    "source": "workshop.txt",
+    "archive": "originals/0003-workshop.txt",
+    "source_sha256": "54dd5d99da27751487fa55a48e635a423d6ad439f8211eb054245bfb7fd98e75",
+    "archived_sha256": "54dd5d99da27751487fa55a48e635a423d6ad439f8211eb054245bfb7fd98e75",
+    "bytes": 85,
+    "status": "converted",
+    "text": "text/0003-workshop.txt.txt",
+    "text_sha256": "87403b11883000092fb9ed60b4ea4ddc68bbcf229283b62a57c940a265276f3d"
+  }
+]

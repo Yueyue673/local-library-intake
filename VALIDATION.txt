@@ -1,0 +1,19 @@
+Local validation, 2026-10-18 (Asia/Shanghai)
+Environment: Windows, Python 3.12.14.
+
+python -m unittest -v
+8 tests passed.
+
+python build_demo.py demo
+Generated three original synthetic input files and a delivery directory.
+
+python intake.py demo/input cli-verification
+Actual CLI result: {"converted": 3, "unsupported": 0, "error": 0}
+
+All three archived SHA-256 hashes match their original input hashes.
+The EPUB ZIP stores chapter two before chapter one; extracted text follows
+the declared spine (chapter one, then chapter two).
+EPUB image URLs, scripts, styles and head metadata are absent from extracted text.
+
+No client files, device, network API, paid model, or cloud service was used.
+No tests on Linux/macOS, client machine, PDF/OCR, DOCX or DRM are claimed.
