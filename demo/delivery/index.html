@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>文件收件记录</title>
+<title>本地文库收件</title>
 <style>
 :root {
   color-scheme: light;
@@ -38,6 +38,7 @@ h1 {
   margin: 0.85rem 0 2.4rem;
   color: var(--muted);
 }
+.lead a { white-space: nowrap; }
 a {
   color: var(--green);
   text-decoration-thickness: 1px;
@@ -94,31 +95,31 @@ th:last-child, td:last-child { padding-right: 0; }
 </head>
 <body>
 <main>
-<h1>文件收件记录</h1>
-<p class="lead">这一批一共 3 个文件。原件按字节原样复制，哈希在<a href="manifest.json">清单</a>里。</p>
+<h1>原文还在，另外抽出一份能读的文本。</h1>
+<p class="lead">离线处理 TXT、Markdown 和 EPUB。原文按字节原样复制。<a href="manifest.json">查看文件哈希和处理结果</a>。</p>
 <table>
 <thead>
-<tr><th>原文件</th><th>情况</th><th>文本</th></tr>
+<tr><th>源文件</th><th>结果</th><th>输出</th></tr>
 </thead>
 <tbody>
     <tr>
       <td>garden.epub</td>
-      <td>已抽出文字</td>
-      <td><a href="text/0001-garden.epub.txt">打开文本</a></td>
+      <td>converted</td>
+      <td><a href="text/0001-garden.epub.txt">阅读文本</a></td>
     </tr>
     <tr>
       <td>recipe.md</td>
-      <td>已抽出文字</td>
-      <td><a href="text/0002-recipe.md.txt">打开文本</a></td>
+      <td>converted</td>
+      <td><a href="text/0002-recipe.md.txt">阅读文本</a></td>
     </tr>
     <tr>
       <td>workshop.txt</td>
-      <td>已抽出文字</td>
-      <td><a href="text/0003-workshop.txt.txt">打开文本</a></td>
+      <td>converted</td>
+      <td><a href="text/0003-workshop.txt.txt">阅读文本</a></td>
     </tr>
 </tbody>
 </table>
-<p class="foot">只收 UTF-8 的 TXT、Markdown，以及没加密的文字 EPUB。Markdown 还是原文。PDF、扫描识别、带锁的书、按内容归类和 CAD 没有处理。不联网，也没有额外安装的包。</p>
+<p class="foot">目前不做 PDF、OCR，也不能解开带数字版权保护的文件。Markdown 仍按文本留下。不联网，也不额外装包。</p>
 </main>
 </body>
 </html>

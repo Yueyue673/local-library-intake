@@ -153,6 +153,7 @@ h1 {
   margin: 0.85rem 0 2.4rem;
   color: var(--muted);
 }
+.lead a { white-space: nowrap; }
 a {
   color: var(--green);
   text-decoration-thickness: 1px;
@@ -207,61 +208,49 @@ th:last-child, td:last-child { padding-right: 0; }
 }
 """
 
-OVERVIEW_NOTE = (
-    "只收 UTF-8 的 TXT、Markdown，以及没加密的文字 EPUB。Markdown 还是原文。"
-    "PDF、扫描识别、带锁的书、按内容归类和 CAD 没有处理。不联网，也没有额外安装的包。"
-)
+OVERVIEW_NOTE = "目前不做 PDF、OCR，也不能解开带数字版权保护的文件。Markdown 仍按文本留下。不联网，也不额外装包。"
 
 
 def overview_page(records):
-    """Local file record. Labels only; file status values stay in the manifest."""
-    labels = {"converted": "已抽出文字", "unsupported": "格式不支持", "error": "出错"}
+    """Local overview. Wording is fixed; file status values stay as recorded."""
     rows = []
     for row in records:
         if "text" in row:
-            output = f'<a href="{html.escape(row["text"], quote=True)}">打开文本</a>'
+            output = f'<a href="{html.escape(row["text"], quote=True)}">阅读文本</a>'
         else:
             output = html.escape(row.get("reason", ""))
-        label = labels.get(row["status"], row["status"])
         mark = ' class="err"' if row["status"] == "error" else ""
         rows.append(
             "    <tr>\n"
             f"      <td>{html.escape(row['source'])}</td>\n"
-            f"      <td{mark}>{html.escape(label)}</td>\n"
+            f"      <td{mark}>{html.escape(row['status'])}</td>\n"
             f"      <td>{output}</td>\n"
             "    </tr>"
         )
-    if records:
-        lead = (
-            f"这一批一共 {len(records)} 个文件。原件按字节原样复制，"
-            '哈希在<a href="manifest.json">清单</a>里。'
-        )
-        table = (
-            "<table>\n"
-            "<thead>\n"
-            "<tr><th>原文件</th><th>情况</th><th>文本</th></tr>\n"
-            "</thead>\n"
-            "<tbody>\n"
-            + "\n".join(rows)
-            + "\n</tbody>\n</table>\n"
-        )
-    else:
-        lead = '这一批没有文件。清单在<a href="manifest.json">这里</a>。'
-        table = ""
+    lead = '离线处理 TXT、Markdown 和 EPUB。原文按字节原样复制。<a href="manifest.json">查看文件哈希和处理结果</a>。'
+    table = (
+        "<table>\n"
+        "<thead>\n"
+        "<tr><th>源文件</th><th>结果</th><th>输出</th></tr>\n"
+        "</thead>\n"
+        "<tbody>\n"
+        + "\n".join(rows)
+        + "\n</tbody>\n</table>\n"
+    )
     parts = [
         "<!doctype html>",
         '<html lang="zh-CN">',
         "<head>",
         '<meta charset="utf-8">',
         '<meta name="viewport" content="width=device-width, initial-scale=1">',
-        "<title>文件收件记录</title>",
+        "<title>本地文库收件</title>",
         "<style>",
         OVERVIEW_STYLE.rstrip("\n"),
         "</style>",
         "</head>",
         "<body>",
         "<main>",
-        "<h1>文件收件记录</h1>",
+        "<h1>原文还在，另外抽出一份能读的文本。</h1>",
         f'<p class="lead">{lead}</p>',
     ]
     if table:
