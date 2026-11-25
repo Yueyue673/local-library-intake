@@ -119,6 +119,152 @@ def input_files(root):
     return files
 
 
+OVERVIEW_STYLE = """\
+:root {
+  color-scheme: light;
+  --paper: #f7f5ef;
+  --ink: #243d34;
+  --muted: #61746a;
+  --line: #dce2d7;
+  --green: #315e4b;
+  --err: #a03535;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.75 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", "WenQuanYi Micro Hei", "Droid Sans Fallback", system-ui, sans-serif;
+}
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 4.5rem;
+}
+h1 {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+.lead {
+  margin: 0.85rem 0 2.4rem;
+  color: var(--muted);
+}
+.lead a { white-space: nowrap; }
+a {
+  color: var(--green);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+a:hover { color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+table {
+  width: max-content;
+  max-width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+th, td { text-align: left; vertical-align: baseline; }
+th {
+  padding: 0 2.25rem 0.5rem 0;
+  border-bottom: 1px solid var(--ink);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+td {
+  padding: 0.8rem 2.25rem 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+td:first-child { overflow-wrap: anywhere; max-width: 16rem; }
+td:nth-child(2) { white-space: nowrap; }
+td:nth-child(3) { overflow-wrap: anywhere; max-width: 16rem; }
+th:last-child, td:last-child { padding-right: 0; }
+.err { color: var(--err); }
+.foot {
+  margin: 2.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+@media (max-width: 640px) {
+  main { padding: 2.5rem 1.15rem 3rem; }
+  th, td { padding-right: 1rem; }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #17231f;
+    --ink: #e0e8dc;
+    --muted: #b0bfae;
+    --line: #3b4b3f;
+    --green: #85b59a;
+    --err: #ffb8b0;
+  }
+}
+"""
+
+OVERVIEW_NOTE = "目前不做 PDF、OCR，也不能解开带数字版权保护的文件。Markdown 仍按文本留下。不联网，也不额外装包。"
+
+
+def overview_page(records):
+    """Local overview. Wording is fixed; file status values stay as recorded."""
+    rows = []
+    for row in records:
+        if "text" in row:
+            output = f'<a href="{html.escape(row["text"], quote=True)}">阅读文本</a>'
+        else:
+            output = html.escape(row.get("reason", ""))
+        mark = ' class="err"' if row["status"] == "error" else ""
+        rows.append(
+            "    <tr>\n"
+            f"      <td>{html.escape(row['source'])}</td>\n"
+            f"      <td{mark}>{html.escape(row['status'])}</td>\n"
+            f"      <td>{output}</td>\n"
+            "    </tr>"
+        )
+    lead = '离线处理 TXT、Markdown 和 EPUB。原文按字节原样复制。<a href="manifest.json">查看文件哈希和处理结果</a>。'
+    table = (
+        "<table>\n"
+        "<thead>\n"
+        "<tr><th>源文件</th><th>结果</th><th>输出</th></tr>\n"
+        "</thead>\n"
+        "<tbody>\n"
+        + "\n".join(rows)
+        + "\n</tbody>\n</table>\n"
+    )
+    parts = [
+        "<!doctype html>",
+        '<html lang="zh-CN">',
+        "<head>",
+        '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>本地文库收件</title>",
+        "<style>",
+        OVERVIEW_STYLE.rstrip("\n"),
+        "</style>",
+        "</head>",
+        "<body>",
+        "<main>",
+        "<h1>原文还在，另外抽出一份能读的文本。</h1>",
+        f'<p class="lead">{lead}</p>',
+    ]
+    if table:
+        parts.append(table.rstrip("\n"))
+    parts.extend([
+        f'<p class="foot">{OVERVIEW_NOTE}</p>',
+        "</main>",
+        "</body>",
+        "</html>",
+        "",
+    ])
+    return "\n".join(parts)
+
+
 def run(source, destination):
     source, destination = Path(source).resolve(), Path(destination).resolve()
     if not source.is_dir():
@@ -164,16 +310,7 @@ def run(source, destination):
         except (OSError, ValueError, KeyError, ET.ParseError, zipfile.BadZipFile, NotImplementedError, RuntimeError) as exc:
             row.update(status="error", reason=str(exc))
     (destination / "manifest.json").write_text(json.dumps(records, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    rows = []
-    for row in records:
-        output = f'<a href="{html.escape(row["text"], quote=True)}">Read text</a>' if "text" in row else html.escape(row.get("reason", ""))
-        rows.append(f'<tr><td>{html.escape(row["source"])}</td><td>{html.escape(row["status"])}</td><td>{output}</td></tr>')
-    page = '<!doctype html><meta charset="utf-8"><title>Local library intake</title>'
-    page += '<style>body{font:17px system-ui;max-width:1000px;margin:48px auto;padding:0 24px;color:#192b38}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:16px;border-bottom:1px solid #ddd}a{color:#075fb3}code{font-size:14px}</style>'
-    page += '<h1>Your original files, plus readable text.</h1><p>Offline TXT, Markdown and EPUB intake demo. Originals are copied byte for byte. <a href="manifest.json">Inspect file hashes and results</a>.</p>'
-    page += '<table><tr><th>Source</th><th>Result</th><th>Output</th></tr>' + ''.join(rows) + '</table>'
-    page += '<p>PDF, OCR, DRM, semantic categorization and CAD are outside this demo. Markdown stays as text. No network code or external packages.</p>'
-    (destination / "index.html").write_text(page, encoding="utf-8")
+    (destination / "index.html").write_text(overview_page(records), encoding="utf-8")
     return records
 
 
